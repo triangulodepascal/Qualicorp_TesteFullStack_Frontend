@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "es2015",
+    "target": "es6",
+    "charset": "utf-8"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
