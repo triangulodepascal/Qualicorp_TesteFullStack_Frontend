@@ -69,7 +69,7 @@
                     v-tooltip.top="'Excluir ' + data.name"
                     icon="pi pi-trash"
                     class="p-button-rounded p-button-danger"
-                    @click="confirmDeleteUser({ ID: data.id, NAME: data.name })"
+                    @click="showDeleteDialog()"
                   />
                 </div>
               </template>
@@ -82,11 +82,18 @@
     </div>
     <UserDialog
       :isEdit="isEdit"
-      :userToEdit="getUserToEdit()"
+      :userToEdit="getSelectedUser()"
       :displayUserDialog="displayUserDialog"
       :usersList="user.usersList"
       @close-user-dialog="closeUserDialog($event)"
       v-if="displayUserDialog"
+    />
+
+    <UserDeleteDialog
+      :userToDelete="getSelectedUser()"
+      :displayDeleteDialog="displayDeleteDialog"
+      @close-delete-dialog="closeDeleteDialog($event)"
+      v-if="displayDeleteDialog"
     />
   </div>
 </template>
@@ -94,15 +101,17 @@
 <script>
 import { ref, computed, onBeforeMount } from 'vue'
 import UserDialog from './components/UserDialog'
+import UserDeleteDialog from './components/UserDeleteDialog'
 import userComposable from './composables/userComposable'
 
 export default {
-  components: { UserDialog },
+  components: { UserDialog, UserDeleteDialog },
   setup() {
     let title = ref('Listagem de usuários cadastrados na Qualicorp')
     let isLoading = ref(true)
     let isEdit = ref(false)
     let displayUserDialog = ref(false)
+    let displayDeleteDialog = ref(false)
 
     const {
       // User info
@@ -111,7 +120,7 @@ export default {
       // CRUD Methods
       getUserList,
       // Secundary Methods
-      getUserToEdit,
+      getSelectedUser,
       confirmDeleteUser,
       // Page props
       dt,
@@ -142,10 +151,23 @@ export default {
       displayUserDialog.value = true
     }
 
+    const showDeleteDialog = () => {
+      displayDeleteDialog.value = true
+    }
+
     const closeUserDialog = async success => {
+      isLoading.value = false
       if (success) await getUserList()
+      isLoading.value = false
       isEdit.value = false
       displayUserDialog.value = false
+    }
+
+    const closeDeleteDialog = async success => {
+      isLoading.value = false
+      if (success) await getUserList()
+      isLoading.value = false
+      displayDeleteDialog.value = false
     }
 
     onBeforeMount(async () => {
@@ -153,6 +175,7 @@ export default {
       await getUserList()
       isLoading.value = false
       displayUserDialog.value = false
+      displayDeleteDialog.value = false
     })
 
     return {
@@ -162,14 +185,17 @@ export default {
       // CRUD Methods
       getUserList,
       // Secundary Methods
-      getUserToEdit,
+      getSelectedUser,
       confirmDeleteUser,
       showUserDialog,
+      showDeleteDialog,
       closeUserDialog,
+      closeDeleteDialog,
       // Page props
       dt,
       listFilter,
       displayUserDialog,
+      displayDeleteDialog,
       title,
       isLoading,
       isEdit,

@@ -41,7 +41,7 @@
           </div>
 
           <template #footer>
-            <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click.prevent="closeCopyDialog(false)" />
+            <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click.prevent="closeUserDialog(false)" />
             <!-- <Button label="Salvar" icon="pi pi-save" :disabled="!isValid" autofocus @click.prevent="saveCopy()" /> -->
             <Button label="Salvar" icon="pi pi-save" autofocus @click.prevent="saveUser()" />
           </template>
@@ -89,7 +89,7 @@ export default {
     //   validate('CONFIG_TXT.Net1.TCPLocalAddress')
     // })
 
-    const closeCopyDialog = success => {
+    const closeUserDialog = success => {
       emit('close-user-dialog', success)
     }
 
@@ -125,7 +125,6 @@ export default {
           data: userData,
         })
 
-        console.log(res)
         return res
       } catch (e) {
         console.log(e)
@@ -156,9 +155,8 @@ export default {
         res = false
       }
 
-      console.log(toastStatus)
       toast.add(toastStatus)
-      closeCopyDialog(res)
+      closeUserDialog(res)
     }
 
     return {
@@ -166,7 +164,7 @@ export default {
       title,
       // errors,
       // isValid,
-      closeCopyDialog,
+      closeUserDialog,
       // validate,
       saveUser,
     }
