@@ -1,24 +1,27 @@
-# qualicorp_testefullstack_frontend
+# Frontend da aplicação de teste para o processo seletivo
 
-## Project setup
-```
-yarn install
-```
+## Objetivos
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+O objetivo dessa aplicação é integrar visualmente o uso da API criada para o processo seletivo (Veja [repositório da API](https://github.com/triangulodepascal/Qualicorp_TesteFullStack_backend/)).
 
-### Compiles and minifies for production
-```
-yarn build
-```
+### Distribuição
 
-### Lints and fixes files
-```
-yarn lint
-```
+A distribuição da aplicação foi feita através do [Heroku](https://www.heroku.com/) e pode ser acessada através [deste link](https://qualicorp-teste-frontend.herokuapp.com/).
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Desenvolvimento
+
+O desenvolvimento visual do frontend foi feito através do framework [VueJs](https://vuejs.org/) utilizando o Vue3 e a compositionAPI.
+
+### Principais dependências
+
+As principais dependências do projeto são:
+
+- O cliente de requisições HTTP [axios](https://www.npmjs.com/package/axios) responsável pelas chamadas à API.
+- A biblioteca de componentes open source [PrimeVue](https://primefaces.org/primevue/showcase/) que possibilitou o design system do projeto e a agilidade de desenvolvimento.
+
+### Possíveis melhorias
+
+As principais dependências do projeto são:
+
+- Adicionar Toasts de confirmação de Adição, Edição e Remoção.
+- Desenvolver os testes unitários dos métodos utilizados.
