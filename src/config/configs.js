@@ -1,3 +1,3 @@
 export default {
-  apiURL: 'https://qualicorp-teste-backend.herokuapp.com',
+  API_URL: 'https://qualicorp-teste-backend.herokuapp.com',
 }

@@ -52,9 +52,9 @@
               </div>
             </template> -->
 
-            <Column field="name" header="Nome" :sortable="true" style="min-width: 10rem; width: 220px"> </Column>
-            <Column field="telefone" header="telefone" :sortable="true" style="min-width: 10rem; width: 220px">
-            </Column>
+            <Column field="name" header="Nome" :sortable="true" style="min-width: 10rem"> </Column>
+            <Column field="telefone" header="Telefone" :sortable="true" style="min-width: 10rem; width: 5rem"></Column>
+            <Column field="email" header="Email" :sortable="true" style="min-width: 10rem"> </Column>
 
             <Column :exportable="false" style="min-width: 2rem; width: 190px">
               <template #body="{ data }">
@@ -62,19 +62,18 @@
                   <Button
                     v-tooltip.top="'Editar ' + data.name"
                     icon="pi pi-pencil"
-                    class="p-button-rounded p-button-outlined p-button-primary p-mr-2"
+                    class="p-button-rounded p-button-outlined p-button-primary p-mr-5"
                     @click="showUserDialog({ showAsEdition: true })"
                   />
                   <Button
                     v-tooltip.top="'Excluir ' + data.name"
                     icon="pi pi-trash"
-                    class="p-button-rounded p-button-danger"
+                    class="p-button-rounded p-button-danger p-ml-5"
                     @click="showDeleteDialog()"
                   />
                 </div>
               </template>
             </Column>
-
             <template #empty> Não há usuários a serem exibidos. </template>
           </DataTable>
         </div>
@@ -88,7 +87,6 @@
       @close-user-dialog="closeUserDialog($event)"
       v-if="displayUserDialog"
     />
-
     <UserDeleteDialog
       :userToDelete="getSelectedUser()"
       :displayDeleteDialog="displayDeleteDialog"
@@ -112,7 +110,6 @@ export default {
     let isEdit = ref(false)
     let displayUserDialog = ref(false)
     let displayDeleteDialog = ref(false)
-
     const {
       // User info
       user,
@@ -121,7 +118,6 @@ export default {
       getUserList,
       // Secundary Methods
       getSelectedUser,
-      confirmDeleteUser,
       // Page props
       dt,
       listFilter,
@@ -137,6 +133,7 @@ export default {
           id: i._id,
           name: i.name,
           telefone: i.telefone,
+          email: i.email,
         }
       })
     })
@@ -186,7 +183,6 @@ export default {
       getUserList,
       // Secundary Methods
       getSelectedUser,
-      confirmDeleteUser,
       showUserDialog,
       showDeleteDialog,
       closeUserDialog,

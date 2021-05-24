@@ -24,7 +24,7 @@
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger"
               autofocus
-              @click.prevent="deleteUser()"
+              @click.prevent="deleteUserAndUpdate()"
             />
           </template>
         </Dialog>
@@ -35,8 +35,7 @@
 
 <script>
 import { unref, ref } from 'vue'
-// import { useToast } from 'primevue/usetoast'
-import axios from 'axios'
+import userComposable from '../composables/userComposable'
 
 export default {
   name: 'UserDialog',
@@ -49,36 +48,24 @@ export default {
     const title = ref(`Tem certeza de que deseja remover o usuário '%s'?`)
     title.value = title.value.replace('%s', userData.name)
 
-    // const toast = useToast()
+    const { deleteUser } = userComposable()
 
     const closeDeleteDialog = success => {
       emit('close-delete-dialog', success)
     }
 
     // CRUD Methods
-    const deleteUser = async () => {
-      let res
-
-      try {
-        const uri = `https://qualicorp-teste-backend.herokuapp.com/user/${userData._id}`
-
-        const { data } = await axios.delete(uri)
-
-        if (data.message == 'User removed') {
-          res = true
-        }
-      } catch (e) {
-        console.log(e)
-        return 'Erro ao deletar usuário'
-      }
-      closeDeleteDialog(res)
+    const deleteUserAndUpdate = async () => {
+      const { data } = await deleteUser(userData)
+      let updateUserList = data.message === 'success' ? true : false
+      closeDeleteDialog(updateUserList)
     }
 
     return {
       userData,
       title,
       closeDeleteDialog,
-      deleteUser,
+      deleteUserAndUpdate,
     }
   },
 }

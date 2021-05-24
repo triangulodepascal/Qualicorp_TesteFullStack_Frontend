@@ -52,11 +52,9 @@
 </template>
 
 <script>
-// import { unref, ref, toRefs, reactive, onBeforeMount } from 'vue'
 import { unref, ref, toRefs, reactive } from 'vue'
-import { useToast } from 'primevue/usetoast'
 import userModel from '../models/userTemplate'
-import axios from 'axios'
+import userComposable from '../composables/userComposable'
 
 export default {
   name: 'UserDialog',
@@ -79,13 +77,12 @@ export default {
       title = ref('Adição de usuário')
     }
 
-    const toast = useToast()
+    const { persistUser } = userComposable()
 
     // let errors = reactive({})
     // let isValid = ref(true)
 
     // onBeforeMount(async () => {
-    //   setNameBasedOnServiceType(userData.CONFIG_TXT.Service.ServiceType)
     //   validate('CONFIG_TXT.Net1.TCPLocalAddress')
     // })
 
@@ -108,55 +105,10 @@ export default {
     //   return isValid.value
     // }
 
-    // CRUD Methods
-    const persistUser = async userData => {
-      try {
-        const method = isEdit.value ? 'put' : 'post'
-        let url
-        if (method == 'put') {
-          url = `https://qualicorp-teste-backend.herokuapp.com/user/${userData._id}`
-        } else {
-          url = `https://qualicorp-teste-backend.herokuapp.com/user`
-        }
-
-        const res = await axios({
-          method,
-          url,
-          data: userData,
-        })
-
-        return res
-      } catch (e) {
-        console.log(e)
-        return {}
-      }
-    }
-
     const saveUser = async () => {
-      let toastStatus = { summary: title.value, life: 3500 }
-      const { data } = await persistUser(userData)
-      let res
-
-      if (data.message === 'success') {
-        toastStatus.severity = 'success'
-        if (isEdit.value) {
-          toastStatus.detail = `Usuário '${userData.name}' editado com sucesso.`
-        } else {
-          toastStatus.detail = `Usuário '${userData.name}' criado com sucesso.`
-        }
-        res = true
-      } else {
-        toastStatus.severity = 'error'
-        if (isEdit.value) {
-          toastStatus.detail = `Ocorreu um erro durante a tentativa de edição do Uusário '${userData.name}'.`
-        } else {
-          toastStatus.detail = `Ocorreu um erro durante a tentativa de adição da Rede '${userData.name}'.`
-        }
-        res = false
-      }
-
-      toast.add(toastStatus)
-      closeUserDialog(res)
+      const { data } = await persistUser(isEdit.value, userData)
+      let updateUserList = data.message === 'success' ? true : false
+      closeUserDialog(updateUserList)
     }
 
     return {
