@@ -116,11 +116,22 @@ export default {
     }
 
     onBeforeMount(async () => {
+      phoneNumber.value = getPhoneMasked()
       onMountedValidation()
     })
 
     const closeUserDialog = success => {
       emit('close-user-dialog', success)
+    }
+
+    const getPhoneMasked = () => {
+      let phoneStr = userData.telefone.toString()
+      return `(${phoneStr.slice(0, 2)}) ${phoneStr.slice(2, 7)}-${phoneStr.slice(7, 12)}`
+    }
+
+    const getPhoneUnmasked = () => {
+      let phoneStr = phoneNumber.value
+      return `${phoneStr.slice(1, 3)}${phoneStr.slice(5, 10)}${phoneStr.slice(11, 15)}`
     }
 
     const isAnyFieldWrong = computed(() => {
@@ -135,12 +146,9 @@ export default {
       return valid
     })
 
-    userData.telefone = computed(() => {
-      return parseInt(phoneNumber.value, 10)
-    })
-
     const onMountedValidation = () => {
-      let validationList = userData._id ? usersList.value : []
+      userData.telefone = parseInt(getPhoneUnmasked(), 10)
+      let validationList = !userData._id ? usersList.value : []
 
       const schema = new UserValidation().createContextSchema(validationList)
 
@@ -159,6 +167,8 @@ export default {
     }
 
     const validate = async field => {
+      userData.telefone = parseInt(phoneNumber.value, 10)
+
       let validationList = !userData._id ? usersList.value : []
 
       const schema = new UserValidation().createContextSchema(validationList)
