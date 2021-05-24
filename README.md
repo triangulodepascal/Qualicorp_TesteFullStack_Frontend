@@ -1,4 +1,4 @@
-# Frontend da aplicação de teste para o processo seletivo
+# Frontend da aplicação de teste para o processo seletivo (Qualicorp)
 
 ## Objetivos
 
@@ -7,6 +7,10 @@ O objetivo dessa aplicação é integrar visualmente o uso da API criada para o 
 ### Distribuição
 
 A distribuição da aplicação foi feita através do [Heroku](https://www.heroku.com/) e pode ser acessada através [deste link](https://qualicorp-teste-frontend.herokuapp.com/).
+
+### Exemplo de uso
+
+Um exemplo de uso da aplicação pode ser visto através [deste link](https://www.youtube.com/watch?v=k8si0KpbK2k)
 
 ### Desenvolvimento
 
