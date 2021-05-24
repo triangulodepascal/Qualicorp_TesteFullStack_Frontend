@@ -1,9 +1,11 @@
 <template>
+  <header>
+    <h1>{{ title }}</h1>
+  </header>
+
   <div class="p-grid">
     <div class="p-col-12">
-      <div class="card">
-        <h5>{{ title }}</h5>
-
+      <div id="table" class="card p-col-10 p-offset-1">
         <Toolbar class="p-mb-4">
           <template #left>
             <Button label="Exportar" icon="pi pi-file-excel" class="p-button-secondary" @click="exportCSV()" />
@@ -41,17 +43,6 @@
             stripedRows
             exportFilename="UsersList"
           >
-            <!-- <template #header>
-              <div class="table-header">
-                <div class="p-d-flex p-jc-end">
-                  <span class="p-input-icon-left">
-                    <i class="pi pi-search" />
-                    <InputText v-model="listFilter['global'].value" placeholder="Filtrar..." />
-                  </span>
-                </div>
-              </div>
-            </template> -->
-
             <Column field="name" header="Nome" :sortable="true" style="min-width: 10rem"> </Column>
             <Column field="telefone" header="Telefone" :sortable="true" style="min-width: 10rem; width: 5rem"></Column>
             <Column field="email" header="Email" :sortable="true" style="min-width: 10rem"> </Column>
@@ -120,11 +111,9 @@ export default {
       getSelectedUser,
       // Page props
       dt,
-      listFilter,
       // Page Methods
       exportCSV,
       rowClass,
-      // initFilters,
     } = userComposable()
 
     user.usersListToView = computed(() => {
@@ -144,12 +133,7 @@ export default {
       } else {
         isEdit.value = false
       }
-
       displayUserDialog.value = true
-    }
-
-    const showDeleteDialog = () => {
-      displayDeleteDialog.value = true
     }
 
     const closeUserDialog = async success => {
@@ -158,6 +142,10 @@ export default {
       isLoading.value = false
       isEdit.value = false
       displayUserDialog.value = false
+    }
+
+    const showDeleteDialog = () => {
+      displayDeleteDialog.value = true
     }
 
     const closeDeleteDialog = async success => {
@@ -189,7 +177,6 @@ export default {
       closeDeleteDialog,
       // Page props
       dt,
-      listFilter,
       displayUserDialog,
       displayDeleteDialog,
       title,
@@ -198,7 +185,6 @@ export default {
       // Page Methods
       exportCSV,
       rowClass,
-      // initFilters,
     }
   },
 }
@@ -208,5 +194,16 @@ export default {
 ::v-deep(.row-selected) {
   background-color: rgba(133, 146, 224, 0.349) !important;
   color: #000 !important;
+}
+</style>
+
+<style>
+header {
+  background: #a7e0d8;
+  padding: 2rem 0;
+  text-align: center;
+}
+#table {
+  padding: 0 2rem;
 }
 </style>
