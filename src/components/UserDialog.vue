@@ -34,6 +34,7 @@
                 mask="999.999.999-99"
                 :class="{ 'p-invalid': getError('cpf') }"
                 @keypress="validate('cpf')"
+                @keyup="validate('cpf')"
               ></InputMask>
               <small class="p-error" v-if="errors['cpf']">{{ errors['cpf'] }}</small>
             </div>
@@ -47,6 +48,7 @@
                 id="email"
                 v-model="userData.email"
                 @keypress="validate('email')"
+                @keyup="validate('email')"
               />
               <small class="p-error" v-if="errors['email']">{{ errors['email'] }}</small>
             </div>
@@ -60,8 +62,10 @@
                 v-model="phoneNumber"
                 mask="(99) 99999-9999"
                 :unmask="true"
+                :autoClear="false"
                 :class="{ 'p-invalid': getError('telefone') }"
                 @keypress="validate('telefone')"
+                @keyup="validate('telefone')"
               ></InputMask>
               <small class="p-error" v-if="errors['telefone']">{{ errors['telefone'] }}</small>
             </div>
