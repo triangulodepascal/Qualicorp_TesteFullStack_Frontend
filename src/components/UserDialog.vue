@@ -14,36 +14,68 @@
         >
           <div class="p-form-grid">
             <div class="p-field p-col-4">
-              <label for="name">Nome</label>
-              <InputText id="name" v-model="userData.name" />
+              <label for="name">Nome Completo</label>
+              <InputText
+                id="name"
+                v-model="userData.name"
+                :class="{ 'p-invalid': getError('name') }"
+                @input="validate('name')"
+              />
+              <small class="p-error" v-if="errors['name']">{{ errors['name'] }}</small>
             </div>
           </div>
 
           <div class="p-form-grid">
             <div class="p-field p-col-4">
               <label for="cpf">CPF</label>
-              <InputText id="cpf" v-model="userData.cpf" />
+              <InputMask
+                id="cpf"
+                v-model="userData.cpf"
+                mask="999.999.999-99"
+                :class="{ 'p-invalid': getError('cpf') }"
+                @keypress="validate('cpf')"
+              ></InputMask>
+              <small class="p-error" v-if="errors['cpf']">{{ errors['cpf'] }}</small>
             </div>
           </div>
 
           <div class="p-form-grid">
             <div class="p-field p-col-10">
               <label for="email">Email</label>
-              <InputText id="email" v-model="userData.email" />
+              <InputText
+                :class="{ 'p-invalid': errors['email'] }"
+                id="email"
+                v-model="userData.email"
+                @keypress="validate('email')"
+              />
+              <small class="p-error" v-if="errors['email']">{{ errors['email'] }}</small>
             </div>
           </div>
 
           <div class="p-form-grid">
             <div class="p-field p-col-5">
               <label for="telefone">Telefone</label>
-              <InputText id="telefone" v-model="userData.telefone" />
+              <InputMask
+                id="telefone"
+                v-model="phoneNumber"
+                mask="(99) 99999-9999"
+                :unmask="true"
+                :class="{ 'p-invalid': getError('telefone') }"
+                @keypress="validate('telefone')"
+              ></InputMask>
+              <small class="p-error" v-if="errors['telefone']">{{ errors['telefone'] }}</small>
             </div>
           </div>
 
           <template #footer>
             <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click.prevent="closeUserDialog(false)" />
-            <!-- <Button label="Salvar" icon="pi pi-save" :disabled="!isValid" autofocus @click.prevent="saveCopy()" /> -->
-            <Button label="Salvar" icon="pi pi-save" autofocus @click.prevent="saveUser()" />
+            <Button
+              label="Salvar"
+              icon="pi pi-save"
+              :disabled="!isAnyFieldWrong"
+              autofocus
+              @click.prevent="saveUser()"
+            />
           </template>
         </Dialog>
       </form>
@@ -52,9 +84,10 @@
 </template>
 
 <script>
-import { unref, ref, toRefs, reactive } from 'vue'
+import { unref, ref, toRefs, reactive, computed, onBeforeMount } from 'vue'
 import userModel from '../models/userTemplate'
 import userComposable from '../composables/userComposable'
+import UserValidation from '../validations/user/UserValidation'
 
 export default {
   name: 'UserDialog',
@@ -66,8 +99,13 @@ export default {
   },
   setup(props, { emit }) {
     let { isEdit } = toRefs(props)
+    let { usersList } = toRefs(props)
+
     let title
     let userData
+    let errors = reactive({})
+    const { persistUser } = userComposable()
+    let phoneNumber = ref('')
 
     if (isEdit.value) {
       userData = { ...unref(props.userToEdit) }
@@ -77,33 +115,61 @@ export default {
       title = ref('Adição de usuário')
     }
 
-    const { persistUser } = userComposable()
-
-    // let errors = reactive({})
-    // let isValid = ref(true)
-
-    // onBeforeMount(async () => {
-    //   validate('CONFIG_TXT.Net1.TCPLocalAddress')
-    // })
+    onBeforeMount(async () => {
+      onMountedValidation()
+    })
 
     const closeUserDialog = success => {
       emit('close-user-dialog', success)
     }
 
-    // const validate = async field => {
-    //   const schema = new ServiceValidation().createCopyContextSchema()
+    const isAnyFieldWrong = computed(() => {
+      let valid = true
+      let validationKeys = Object.keys(errors)
+      for (let i = 0; i < validationKeys.length; i++) {
+        if (errors[validationKeys[i]]) {
+          valid = false
+          break
+        }
+      }
+      return valid
+    })
 
-    //   try {
-    //     await schema.validateAt(field, userData)
-    //     errors[field] = false
-    //     isValid.value = true
-    //   } catch (err) {
-    //     errors[field] = err.message
-    //     isValid.value = false
-    //   }
+    userData.telefone = computed(() => {
+      return parseInt(phoneNumber.value, 10)
+    })
 
-    //   return isValid.value
-    // }
+    const onMountedValidation = () => {
+      let validationList = userData._id ? usersList.value : []
+
+      const schema = new UserValidation().createContextSchema(validationList)
+
+      try {
+        schema.validateSync(userData, { abortEarly: false })
+      } catch (err) {
+        for (let i = 0; i < err.inner.length; i++) {
+          let validationErr = err.inner[i]
+          errors[validationErr.path] = validationErr.message
+        }
+      }
+    }
+
+    const getError = field => {
+      return errors[field]
+    }
+
+    const validate = async field => {
+      let validationList = !userData._id ? usersList.value : []
+
+      const schema = new UserValidation().createContextSchema(validationList)
+
+      try {
+        schema.validateSyncAt(field, userData)
+        errors[field] = false
+      } catch (err) {
+        errors[field] = err.message
+      }
+    }
 
     const saveUser = async () => {
       const { data } = await persistUser(isEdit.value, userData)
@@ -114,11 +180,13 @@ export default {
     return {
       userData,
       title,
-      // errors,
-      // isValid,
+      isAnyFieldWrong,
+      errors,
+      phoneNumber,
       closeUserDialog,
-      // validate,
+      validate,
       saveUser,
+      getError,
     }
   },
 }
