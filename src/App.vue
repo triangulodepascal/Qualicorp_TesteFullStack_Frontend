@@ -115,6 +115,15 @@ export default {
       rowClass,
     } = userComposable()
 
+    onBeforeMount(async () => {
+      isLoading.value = true
+      await getUserList()
+      isLoading.value = false
+      displayUserDialog.value = false
+      displayDeleteDialog.value = false
+    })
+
+    // usersListToView são as informações do usuário que serão apresentadas na tabela
     user.usersListToView = computed(() => {
       return user.usersList.map(i => {
         return {
@@ -135,10 +144,10 @@ export default {
       displayUserDialog.value = true
     }
 
-    const closeUserDialog = async success => {
+    const closeUserDialog = async shouldUpdateUserList => {
       displayUserDialog.value = false
       isLoading.value = false
-      if (success) await getUserList()
+      if (shouldUpdateUserList) await getUserList()
       isLoading.value = false
       isEdit.value = false
     }
@@ -147,20 +156,12 @@ export default {
       displayDeleteDialog.value = true
     }
 
-    const closeDeleteDialog = async success => {
+    const closeDeleteDialog = async shouldUpdateUserList => {
       displayDeleteDialog.value = false
       isLoading.value = false
-      if (success) await getUserList()
+      if (shouldUpdateUserList) await getUserList()
       isLoading.value = false
     }
-
-    onBeforeMount(async () => {
-      isLoading.value = true
-      await getUserList()
-      isLoading.value = false
-      displayUserDialog.value = false
-      displayDeleteDialog.value = false
-    })
 
     return {
       // User info

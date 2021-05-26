@@ -24,7 +24,7 @@
               icon="pi pi-trash"
               class="p-button-rounded p-button-danger"
               autofocus
-              @click.prevent="deleteUserAndUpdate()"
+              @click.prevent="removeUserFromList()"
             />
           </template>
         </Dialog>
@@ -45,43 +45,47 @@ export default {
     displayDeleteDialog: { type: Boolean, required: true },
   },
   setup(props, { emit }) {
+    const { deleteUser } = userComposable()
+    const toast = useToast()
+
+    // Desestruturando informações recebidas e armazenando em nova variável
     let userData = { ...unref(props.userToDelete) }
+
     const title = ref(`Tem certeza de que deseja remover o usuário '%s'?`)
     title.value = title.value.replace('%s', userData.name)
 
-    const toast = useToast()
-    const { deleteUser } = userComposable()
-
-    const closeDeleteDialog = success => {
-      emit('close-delete-dialog', success)
+    const closeDeleteDialog = shouldUpdateUserList => {
+      emit('close-delete-dialog', shouldUpdateUserList)
     }
 
     // CRUD Methods
-    const deleteUserAndUpdate = async () => {
-      let updateUserList = null
+    const removeUserFromList = async () => {
+      let shouldUpdateUserList = null
+
       let toastStatus = { summary: 'Remoção de usuário', life: 3500 }
+
       const { data } = await deleteUser(userData)
 
       if (data.message === 'success') {
         toastStatus.severity = 'success'
         toastStatus.detail = `Usuário '${userData.name}' removido com sucesso.`
 
-        updateUserList = true
+        shouldUpdateUserList = true
       } else {
         toastStatus.severity = 'error'
         toastStatus.detail = `Ocorreu um erro durante a tentativa de remoção do usuário '${userData.name}'.`
 
-        updateUserList = false
+        shouldUpdateUserList = false
       }
-      toast.add(toastStatus)
-      closeDeleteDialog(updateUserList)
+      toast.add(toastStatus) // Adicionando Toast à tela
+      closeDeleteDialog(shouldUpdateUserList)
     }
 
     return {
       userData,
       title,
       closeDeleteDialog,
-      deleteUserAndUpdate,
+      removeUserFromList,
     }
   },
 }

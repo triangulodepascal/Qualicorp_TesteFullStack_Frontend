@@ -89,7 +89,7 @@
 
 <script>
 import { unref, ref, toRefs, reactive, computed, onBeforeMount } from 'vue'
-import userModel from '../models/userTemplate'
+import userTemplate from '../models/userTemplate'
 import userComposable from '../composables/userComposable'
 import UserValidation from '../validations/user/UserValidation'
 import { useToast } from 'primevue/usetoast'
@@ -103,22 +103,22 @@ export default {
     usersList: { type: Object, required: true },
   },
   setup(props, { emit }) {
+    const { persistUser } = userComposable()
+    const toast = useToast()
+
     let { isEdit } = toRefs(props)
     let { usersList } = toRefs(props)
-
-    const toast = useToast()
 
     let title
     let userData
     let errors = reactive({})
-    const { persistUser } = userComposable()
     let phoneNumber = ref('')
 
     if (isEdit.value) {
       userData = { ...unref(props.userToEdit) }
       title = ref('Edição de usuário')
     } else {
-      userData = reactive(JSON.parse(JSON.stringify(userModel)))
+      userData = reactive(JSON.parse(JSON.stringify(userTemplate)))
       title = ref('Adição de usuário')
     }
 
@@ -127,8 +127,8 @@ export default {
       onMountedValidation()
     })
 
-    const closeUserDialog = success => {
-      emit('close-user-dialog', success)
+    const closeUserDialog = shouldUpdateUserList => {
+      emit('close-user-dialog', shouldUpdateUserList)
     }
 
     const getPhoneMasked = () => {
@@ -155,6 +155,10 @@ export default {
 
     const onMountedValidation = () => {
       userData.telefone = parseInt(getPhoneUnmasked(), 10)
+
+      /* Caso o id não exista, deve-se enviar a lista de usuários existentes para validação,
+       para evitar a criação de usuários duplicados
+      */
       let validationList = !userData._id ? usersList.value : []
 
       const schema = new UserValidation().createContextSchema(validationList)
@@ -176,6 +180,9 @@ export default {
     const validate = async field => {
       userData.telefone = parseInt(phoneNumber.value, 10)
 
+      /* Caso o id não exista, deve-se enviar a lista de usuários existentes para validação,
+       para evitar a criação de usuários duplicados
+      */
       let validationList = !userData._id ? usersList.value : []
 
       const schema = new UserValidation().createContextSchema(validationList)
