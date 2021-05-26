@@ -92,6 +92,7 @@ import { unref, ref, toRefs, reactive, computed, onBeforeMount } from 'vue'
 import userModel from '../models/userTemplate'
 import userComposable from '../composables/userComposable'
 import UserValidation from '../validations/user/UserValidation'
+import { useToast } from 'primevue/usetoast'
 
 export default {
   name: 'UserDialog',
@@ -104,6 +105,8 @@ export default {
   setup(props, { emit }) {
     let { isEdit } = toRefs(props)
     let { usersList } = toRefs(props)
+
+    const toast = useToast()
 
     let title
     let userData
@@ -186,8 +189,32 @@ export default {
     }
 
     const saveUser = async () => {
+      let updateUserList = null
+      let toastStatus = isEdit.value
+        ? { summary: 'Edição de usuário', life: 3500 }
+        : { summary: 'Criação de usuário', life: 3500 }
       const { data } = await persistUser(isEdit.value, userData)
-      let updateUserList = data.message === 'success' ? true : false
+
+      if (data.message === 'success') {
+        toastStatus.severity = 'success'
+        if (isEdit.value) {
+          toastStatus.detail = `Usuário '${userData.name}' editado com sucesso.`
+        } else {
+          toastStatus.detail = `Usuário '${userData.name}' criado com sucesso.`
+        }
+
+        updateUserList = true
+      } else {
+        toastStatus.severity = 'error'
+        if (isEdit.value) {
+          toastStatus.detail = `Ocorreu um erro durante a tentativa de edição do usuário '${userData.name}'.`
+        } else {
+          toastStatus.detail = `Ocorreu um erro durante a tentativa de criação do usuário '${userData.name}'.`
+        }
+
+        updateUserList = false
+      }
+      toast.add(toastStatus)
       closeUserDialog(updateUserList)
     }
 

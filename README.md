@@ -26,5 +26,4 @@ As principais dependências do projeto são:
 
 ### Possíveis melhorias
 
-- Adicionar Toasts de confirmação de Adição, Edição e Remoção.
 - Desenvolver os testes unitários dos métodos utilizados.

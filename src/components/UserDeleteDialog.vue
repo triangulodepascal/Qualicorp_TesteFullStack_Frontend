@@ -36,6 +36,7 @@
 <script>
 import { unref, ref } from 'vue'
 import userComposable from '../composables/userComposable'
+import { useToast } from 'primevue/usetoast'
 
 export default {
   name: 'UserDialog',
@@ -48,6 +49,7 @@ export default {
     const title = ref(`Tem certeza de que deseja remover o usuário '%s'?`)
     title.value = title.value.replace('%s', userData.name)
 
+    const toast = useToast()
     const { deleteUser } = userComposable()
 
     const closeDeleteDialog = success => {
@@ -56,8 +58,22 @@ export default {
 
     // CRUD Methods
     const deleteUserAndUpdate = async () => {
+      let updateUserList = null
+      let toastStatus = { summary: 'Remoção de usuário', life: 3500 }
       const { data } = await deleteUser(userData)
-      let updateUserList = data.message === 'success' ? true : false
+
+      if (data.message === 'success') {
+        toastStatus.severity = 'success'
+        toastStatus.detail = `Usuário '${userData.name}' removido com sucesso.`
+
+        updateUserList = true
+      } else {
+        toastStatus.severity = 'error'
+        toastStatus.detail = `Ocorreu um erro durante a tentativa de remoção do usuário '${userData.name}'.`
+
+        updateUserList = false
+      }
+      toast.add(toastStatus)
       closeDeleteDialog(updateUserList)
     }
 

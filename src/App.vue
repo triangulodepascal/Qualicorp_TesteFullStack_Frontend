@@ -6,6 +6,7 @@
   <div class="p-grid">
     <div class="p-col-12">
       <div id="table" class="card p-col-10 p-offset-1">
+        <Toast />
         <Toolbar class="p-mb-4">
           <template #left>
             <Button label="Exportar" icon="pi pi-file-excel" class="p-button-secondary" @click="exportCSV()" />
@@ -89,9 +90,10 @@ import { ref, computed, onBeforeMount } from 'vue'
 import UserDialog from './components/UserDialog'
 import UserDeleteDialog from './components/UserDeleteDialog'
 import userComposable from './composables/userComposable'
+import Toast from 'primevue/toast'
 
 export default {
-  components: { UserDialog, UserDeleteDialog },
+  components: { UserDialog, UserDeleteDialog, Toast },
   setup() {
     let title = ref('Listagem de usuários cadastrados na Qualicorp')
     let isLoading = ref(true)
@@ -134,11 +136,11 @@ export default {
     }
 
     const closeUserDialog = async success => {
+      displayUserDialog.value = false
       isLoading.value = false
       if (success) await getUserList()
       isLoading.value = false
       isEdit.value = false
-      displayUserDialog.value = false
     }
 
     const showDeleteDialog = () => {
@@ -146,10 +148,10 @@ export default {
     }
 
     const closeDeleteDialog = async success => {
+      displayDeleteDialog.value = false
       isLoading.value = false
       if (success) await getUserList()
       isLoading.value = false
-      displayDeleteDialog.value = false
     }
 
     onBeforeMount(async () => {
