@@ -23,7 +23,4 @@ As principais dependências do projeto são:
 - O cliente de requisições HTTP [axios](https://www.npmjs.com/package/axios) responsável pelas chamadas à API.
 - A biblioteca de componentes open source [PrimeVue](https://primefaces.org/primevue/showcase/) que possibilitou o design system do projeto e a agilidade de desenvolvimento.
 - O construtor de esquemas de validação [Yup](https://github.com/jquense/yup) que permitiu uma menor complexidade de validações na API e redução de erros durante a apresentação de dados.
-
-### Possíveis melhorias
-
-- Desenvolver os testes unitários dos métodos utilizados.
+- O framework de testes [Jest](https://jestjs.io/pt-BR/) utilizado para escrever os testes unitários das validações criadas através do yup, garantindo uma maior segurança contra bugs na aplicação.
